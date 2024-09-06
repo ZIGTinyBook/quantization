@@ -2,8 +2,8 @@ const std = @import("std");
 
 //input matrix must be normalized [0, 1] and returns a symmetric unsigned quantized matrix
 pub fn quant_sym_u8_matrix(comptime T: anytype, comptime rows: usize, comptime cols: usize, matrix: *[rows][cols]T) [rows][cols]u8 {
-    const stdout = std.io.getStdOut().writer();
-    stdout.print("\n quantizing ... ", .{}) catch {};
+    //const stdout = std.io.getStdOut().writer();
+    //stdout.print("\n quantizing ... ", .{}) catch {};
     // Allocate the result matrix
     var u8Matrix: [rows][cols]u8 = undefined;
 
@@ -13,7 +13,7 @@ pub fn quant_sym_u8_matrix(comptime T: anytype, comptime rows: usize, comptime c
             //const u8Value: u8 = @intCast((value.*) * 255);
             const u8Value: u8 = @intFromFloat((value.*) * 255);
             u8Matrix[i][j] = u8Value;
-            stdout.print("\n[{}][{}] from {} to {} ", .{ i, j, value.*, u8Matrix[i][j] }) catch {}; // remember to activate stdout
+            //stdout.print("\n[{}][{}] from {} to {} ", .{ i, j, value.*, u8Matrix[i][j] }) catch {}; // remember to activate stdout
         }
     }
 
@@ -21,15 +21,14 @@ pub fn quant_sym_u8_matrix(comptime T: anytype, comptime rows: usize, comptime c
 }
 
 //input vector must be normalized [0, 1] and returns a symmetric unsigned quantized vector
-pub fn quant_u8_vector(comptime T: anytype, vector: [][]T) [][]u8 {
+pub fn quant_u8_vector(comptime T: anytype, comptime len: usize, vector: *[len]T) [len]u8 {
 
     // Allocate the result vector
-    var u8Vec = std.heap.c_allocator.alloc([]u8, vector.len) catch unreachable;
+    var u8Vec: [len]u8 = undefined;
 
-    for (vector, 0..) |value, i| {
+    for (vector, 0..) |*value, i| {
         // Convert normalized value (in range [0, 1]) to u8 (in range [0, 255])
-        const u8Value: u8 = @intCast(value * 255);
-        u8Vec[i] = u8Value;
+        u8Vec[i] = @intFromFloat((value.*) * 255);
     }
 
     return u8Vec;

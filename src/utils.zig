@@ -3,7 +3,7 @@ const std = @import("std");
 //return range [0, 1]
 pub fn normalize_matrix(comptime T: type, comptime rows: usize, comptime cols: usize, matrix: *[rows][cols]T) [rows][cols]T {
     const stdout = std.io.getStdOut().writer();
-    stdout.print("\n normalizing ... ", .{}) catch {};
+    stdout.print("\n\n normalizing ... ", .{}) catch {};
     // Ensure matrix is not empty
     if (matrix.len == 0 or matrix[0].len == 0) {
         return matrix;
@@ -36,7 +36,7 @@ pub fn normalize_matrix(comptime T: type, comptime rows: usize, comptime cols: u
         for (row, 0..) |*value, j| {
             // Normalize the value to the range [0, 1]
             normalizedMatrix[i][j] = (value.* - minValue) / range;
-            stdout.print("\n[{}][{}] from {} to {} ", .{ i, j, value.*, normalizedMatrix[i][j] }) catch {}; // remember to activate stdout
+            //stdout.print("\n[{}][{}] from {} to {} ", .{ i, j, value.*, normalizedMatrix[i][j] }) catch {}; // remember to activate stdout
         }
     }
 
@@ -44,25 +44,27 @@ pub fn normalize_matrix(comptime T: type, comptime rows: usize, comptime cols: u
 }
 
 //return range: [0, 1]
-pub fn normalize_vector(comptime T: anytype, vec: []T) []T {
+pub fn normalize_vector(comptime T: anytype, comptime len: usize, vec: *[len]T) [len]T {
+    const stdout = std.io.getStdOut().writer();
     // Find the minimum and maximum values in the vector
     var minValue = vec[0];
     var maxValue = vec[0];
 
-    for (vec) |value| {
-        if (value < minValue) minValue = value;
-        if (value > maxValue) maxValue = value;
+    for (vec) |*value| {
+        if (value.* < minValue) minValue = value.*;
+        if (value.* > maxValue) maxValue = value.*;
     }
 
     // Calculate the range of the vector values
     const range = maxValue - minValue;
-
+    stdout.print("\n\n normalizing ... ", .{}) catch {};
+    stdout.print("\n max={} , min={} , range={}... ", .{ maxValue, minValue, range }) catch {};
     // Create a new vector to hold the normalized values
-    var normalizedVector = std.heap.c_allocator.alloc([]T, vec.len) catch unreachable;
+    var normalizedVector: [len]T = undefined;
 
-    for (vec, 0..) |value, i| {
+    for (vec, 0..) |*value, i| {
         // Normalize the value to the range [0, 1]
-        normalizedVector[i] = (value - minValue) / range;
+        normalizedVector[i] = (value.* - minValue) / range;
     }
 
     return normalizedVector;

@@ -11,6 +11,7 @@ The code is a zig replica of what explained by Marios Fournarakis and Markus Nag
 | vector quantization to u8                |   🚧   |
 | qunatization error computation           |   🚧   |
 | parallelized dot product                 |   🚧   |
+| fix vector = udefined, not good practice |        |
 | check comptime                           |        |
 | tests                                    |        |
 
